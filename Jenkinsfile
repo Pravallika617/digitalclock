@@ -16,25 +16,19 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                echo 'Building Docker Image...'
-                script {
-                    // Build the Docker image with a custom tag
-                    dockerImage = docker.build("digitalclock:latest")
-                }
+                echo 'Building Docker Image using CLI...'
+                bat 'docker build -t digitalclock:latest .'
             }
         }
 
         stage('Docker Run') {
             steps {
-                echo 'Running Docker Container...'
-                script {
-                    // Stop and remove any existing container
-                    sh 'docker stop digitalclock || true'
-                    sh 'docker rm digitalclock || true'
-
-                    // Run new container
-                    sh 'docker run -d --name digitalclock -p 8080:80 digitalclock:latest'
-                }
+                echo 'Running Docker Container using CLI...'
+                bat '''
+                    docker stop digitalclock || echo "No container to stop"
+                    docker rm digitalclock || echo "No container to remove"
+                    docker run -d --name digitalclock -p 8080:80 digitalclock:latest
+                '''
                 echo 'Docker container is running at http://localhost:8080'
             }
         }

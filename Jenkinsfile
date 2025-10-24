@@ -4,46 +4,53 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
+                echo 'Cloning the Digital Clock repository...'
                 git branch: 'main', url: 'https://github.com/Pravallika617/digitalclock.git'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the Digital Clock Website...'
+                echo 'Building the Digital Clock website...'
+                bat 'echo Build stage completed.'
             }
         }
 
         stage('Docker Build') {
             steps {
-                echo 'Building Docker Image using CLI...'
-                bat 'docker build -t digitalclock:latest .'
+                echo 'Building Docker image for Digital Clock...'
+                bat '''
+                    docker build -t digitalclock:latest .
+                '''
             }
         }
 
         stage('Docker Run') {
             steps {
-                echo 'Running Docker Container using CLI...'
+                echo 'Running Docker Container for Digital Clock...'
                 bat '''
-                    docker stop digitalclock || echo "No container to stop"
-                    docker rm digitalclock || echo "No container to remove"
-                    docker run -d --name digitalclock -p 8080:80 digitalclock:latest
+                    docker stop digitalclock || echo "No existing container to stop"
+                    docker rm digitalclock || echo "No existing container to remove"
+                    docker run -d --name digitalclock -p 9090:80 digitalclock:latest
                 '''
-                echo 'Docker container is running at http://localhost:8080'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying website files to local folder...'
-                bat '''
-                    mkdir C:\\Deployment
-                    copy index.html C:\\Deployment\\
-                    copy style.css C:\\Deployment\\
-                    copy script.js C:\\Deployment\\
-                '''
-                echo 'Deployment successful! Open C:\\Deployment\\index.html to view the website.'
+                echo 'Deployment successful!'
+                echo 'Open http://localhost:9090 in your browser to view the Digital Clock website.'
+                bat 'docker ps'
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline executed successfully ✅'
+        }
+        failure {
+            echo 'Pipeline failed ❌ — please check the logs for details.'
         }
     }
 }

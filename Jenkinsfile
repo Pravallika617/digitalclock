@@ -14,6 +14,31 @@ pipeline {
             }
         }
 
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker Image...'
+                script {
+                    // Build the Docker image with a custom tag
+                    dockerImage = docker.build("digitalclock:latest")
+                }
+            }
+        }
+
+        stage('Docker Run') {
+            steps {
+                echo 'Running Docker Container...'
+                script {
+                    // Stop and remove any existing container
+                    sh 'docker stop digitalclock || true'
+                    sh 'docker rm digitalclock || true'
+
+                    // Run new container
+                    sh 'docker run -d --name digitalclock -p 8080:80 digitalclock:latest'
+                }
+                echo 'Docker container is running at http://localhost:8080'
+            }
+        }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying website files to local folder...'

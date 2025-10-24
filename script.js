@@ -1,6 +1,15 @@
-function updateTime() {
-  const time = new Date();
-  document.getElementById("time").innerText = time.toLocaleTimeString();
-}
-setInterval(updateTime, 1000);
-updateTime();
+const registerForm = document.getElementById('registerForm');
+const projectList = document.getElementById('projectList');
+
+registerForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+
+    const listItem = document.createElement('li');
+    listItem.textContent = `Student: ${name}, Email: ${email}`;
+    projectList.appendChild(listItem);
+
+    registerForm.reset();
+});
